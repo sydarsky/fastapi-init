@@ -1,0 +1,5 @@
+site_name: FastAPI Docs
+
+nav:
+  - About: index.md
+  - Examples: examples.md
