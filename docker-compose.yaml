@@ -9,3 +9,8 @@ services:
       - "8010:8010"
     volumes:
       - ./documentation:/docs
+    develop:
+      watch:
+        - path: ./documentation
+          action: sync
+          target: /docs
