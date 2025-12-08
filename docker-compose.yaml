@@ -1,3 +1,19 @@
+x-service-backend-common: &service-backend-common
+  build:
+    dockerfile: Dockerfile
+    context: ./backend
+  restart: always
+  env_file:
+    - .env
+  volumes:
+    - ./backend/app:/app
+  command: |
+    sh -c "
+    python -m uvicorn main:app --port=8080 --host=0.0.0.0 --reload
+    "
+  networks:
+    - main_network
+
 services:
   documentation:
     image: squidfunk/mkdocs-material:latest
@@ -8,9 +24,29 @@ services:
     ports:
       - "8010:8010"
     volumes:
-      - ./documentation:/docs
+      - ./documentation:/docs:ro
     develop:
       watch:
         - path: ./documentation
           action: sync
           target: /docs
+    profiles:
+    - docs
+
+  backend1:
+    <<: *service-backend-common
+    container_name: backend1
+    hostname: backend1
+    ports:
+      - "8080:8080"
+  
+  backend2:
+    <<: *service-backend-common
+    container_name: backend2
+    hostname: backend2
+    ports:
+      - "8081:8080"
+
+networks:
+  main_network:
+    driver: bridge
